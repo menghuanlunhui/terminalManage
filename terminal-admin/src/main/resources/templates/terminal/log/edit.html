@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改定位卡定位记录')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-log-edit" th:object="${tTerminalGpsLog}">
+            <input name="serialId" th:field="*{serialId}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">定位卡主键：</label>
+                <div class="col-sm-8">
+                    <input name="terminalId" class="form-control" th:field="*{terminalId}" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">定位卡名称：</label>
+                <div class="col-sm-8">
+                    <input name="terminalName" class="form-control" th:field="*{terminalName}" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">经度：</label>
+                <div class="col-sm-8">
+                    <input name="longitude" th:field="*{longitude}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">纬度：</label>
+                <div class="col-sm-8">
+                    <input name="latitude" th:field="*{latitude}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">电量百分比：</label>
+                <div class="col-sm-8">
+                    <input name="batteryPercentage" th:field="*{batteryPercentage}" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">电子围栏标志：:</label>
+                <div class="col-sm-8">
+                    <select name="fenceFlag" class="form-control" th:field="*{fenceFlag}">
+                        <option value="0">不在围栏内</option>
+                        <option value="1">在围栏内</option>
+                        <option value="2">未设置围栏</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "terminal/log";
+        $("#form-log-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-log-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

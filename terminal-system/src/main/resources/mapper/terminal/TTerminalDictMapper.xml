@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.terminal.mapper.TTerminalDictMapper">
+    
+    <resultMap type="TTerminalDict" id="TTerminalDictResult">
+        <result property="terminalDictCode"    column="terminal_dict_code"    />
+        <result property="terminalDictName"    column="terminal_dict_name"    />
+        <result property="terminalDictMemo"    column="terminal_dict_memo"    />
+        <result property="terminalDictType"    column="terminal_dict_type"    />
+        <result property="enableFlag"    column="enable_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTTerminalDictVo">
+        select terminal_dict_code, terminal_dict_name, terminal_dict_memo, terminal_dict_type, enable_flag, create_time, update_time from t_terminal_dict
+    </sql>
+
+    <select id="selectTTerminalDictList" parameterType="TTerminalDict" resultMap="TTerminalDictResult">
+        <include refid="selectTTerminalDictVo"/>
+        <where>  
+            <if test="terminalDictName != null  and terminalDictName != ''"> and terminal_dict_name like concat('%', #{terminalDictName}, '%')</if>
+            <if test="terminalDictMemo != null  and terminalDictMemo != ''"> and terminal_dict_memo = #{terminalDictMemo}</if>
+            <if test="terminalDictType != null "> and terminal_dict_type = #{terminalDictType}</if>
+            <if test="enableFlag != null "> and enable_flag = #{enableFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectTTerminalDictById" parameterType="String" resultMap="TTerminalDictResult">
+        <include refid="selectTTerminalDictVo"/>
+        where terminal_dict_code = #{terminalDictCode}
+    </select>
+        
+    <insert id="insertTTerminalDict" parameterType="TTerminalDict">
+        insert into t_terminal_dict
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="terminalDictCode != null  and terminalDictCode != ''">terminal_dict_code,</if>
+            <if test="terminalDictName != null  and terminalDictName != ''">terminal_dict_name,</if>
+            <if test="terminalDictMemo != null  and terminalDictMemo != ''">terminal_dict_memo,</if>
+            <if test="terminalDictType != null ">terminal_dict_type,</if>
+            <if test="enableFlag != null ">enable_flag,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="terminalDictCode != null  and terminalDictCode != ''">#{terminalDictCode},</if>
+            <if test="terminalDictName != null  and terminalDictName != ''">#{terminalDictName},</if>
+            <if test="terminalDictMemo != null  and terminalDictMemo != ''">#{terminalDictMemo},</if>
+            <if test="terminalDictType != null ">#{terminalDictType},</if>
+            <if test="enableFlag != null ">#{enableFlag},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTTerminalDict" parameterType="TTerminalDict">
+        update t_terminal_dict
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="terminalDictName != null  and terminalDictName != ''">terminal_dict_name = #{terminalDictName},</if>
+            <if test="terminalDictMemo != null  and terminalDictMemo != ''">terminal_dict_memo = #{terminalDictMemo},</if>
+            <if test="terminalDictType != null ">terminal_dict_type = #{terminalDictType},</if>
+            <if test="enableFlag != null ">enable_flag = #{enableFlag},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where terminal_dict_code = #{terminalDictCode}
+    </update>
+
+    <delete id="deleteTTerminalDictById" parameterType="String">
+        delete from t_terminal_dict where terminal_dict_code = #{terminalDictCode}
+    </delete>
+
+    <delete id="deleteTTerminalDictByIds" parameterType="String">
+        delete from t_terminal_dict where terminal_dict_code in 
+        <foreach item="terminalDictCode" collection="array" open="(" separator="," close=")">
+            #{terminalDictCode}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.terminal.mapper.TTerminalGpsLogMapper">
+    
+    <resultMap type="TTerminalGpsLog" id="TTerminalGpsLogResult">
+        <result property="serialId"    column="serial_id"    />
+        <result property="terminalId"    column="terminal_id"    />
+        <result property="terminalName"    column="terminal_name"    />
+        <result property="longitude"    column="longitude"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="batteryPercentage"    column="battery_percentage"    />
+        <result property="fenceFlag"    column="fence_flag"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTTerminalGpsLogVo">
+        SELECT
+            tl.serial_id,
+            tl.terminal_id,
+            tl.longitude,
+            tl.latitude,
+            tl.battery_percentage,
+            tl.fence_flag,
+            tl.create_time,
+            ti.terminal_name
+        FROM
+            t_terminal_gps_log tl left join t_terminal_info ti on tl.terminal_id = ti.terminal_id
+    </sql>
+
+    <select id="selectTTerminalGpsLogList" parameterType="TTerminalGpsLog" resultMap="TTerminalGpsLogResult">
+        <include refid="selectTTerminalGpsLogVo"/>
+        <where>  
+            <if test="terminalId != null  and terminalId != ''"> and tl.terminal_id = #{terminalId}</if>
+            <if test="longitude != null "> and tl.longitude = #{longitude}</if>
+            <if test="latitude != null "> and tl.latitude = #{latitude}</if>
+            <if test="batteryPercentage != null "> and tl.battery_percentage = #{batteryPercentage}</if>
+            <if test="fenceFlag != null "> and tl.fence_flag = #{fenceFlag}</if>
+            <if test="terminalName != null  and terminalName != ''"> and ti.terminal_name like concat('%', #{terminalName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTTerminalGpsLogById" parameterType="String" resultMap="TTerminalGpsLogResult">
+        <include refid="selectTTerminalGpsLogVo"/>
+        where tl.serial_id = #{serialId}
+    </select>
+        
+    <insert id="insertTTerminalGpsLog" parameterType="TTerminalGpsLog">
+        insert into t_terminal_gps_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serialId != null  and serialId != ''">serial_id,</if>
+            <if test="terminalId != null  and terminalId != ''">terminal_id,</if>
+            <if test="longitude != null ">longitude,</if>
+            <if test="latitude != null ">latitude,</if>
+            <if test="batteryPercentage != null ">battery_percentage,</if>
+            <if test="fenceFlag != null ">fence_flag,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serialId != null  and serialId != ''">#{serialId},</if>
+            <if test="terminalId != null  and terminalId != ''">#{terminalId},</if>
+            <if test="longitude != null ">#{longitude},</if>
+            <if test="latitude != null ">#{latitude},</if>
+            <if test="batteryPercentage != null ">#{batteryPercentage},</if>
+            <if test="fenceFlag != null ">#{fenceFlag},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTTerminalGpsLog" parameterType="TTerminalGpsLog">
+        update t_terminal_gps_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="terminalId != null  and terminalId != ''">terminal_id = #{terminalId},</if>
+            <if test="longitude != null ">longitude = #{longitude},</if>
+            <if test="latitude != null ">latitude = #{latitude},</if>
+            <if test="batteryPercentage != null ">battery_percentage = #{batteryPercentage},</if>
+            <if test="fenceFlag != null ">fence_flag = #{fenceFlag},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where serial_id = #{serialId}
+    </update>
+
+    <delete id="deleteTTerminalGpsLogById" parameterType="String">
+        delete from t_terminal_gps_log where serial_id = #{serialId}
+    </delete>
+
+    <delete id="deleteTTerminalGpsLogByIds" parameterType="String">
+        delete from t_terminal_gps_log where serial_id in 
+        <foreach item="serialId" collection="array" open="(" separator="," close=")">
+            #{serialId}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('定位卡基础信息列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>卡片名称：</label>
+                                <input type="text" name="terminalName"/>
+                            </li>
+                            <li>
+                                <label>卡片分组：</label>
+                                <input type="text" name="terminalGroupName"/>
+                            </li>
+
+                            <li>
+                                卡片状态：
+                                <select name="terminalStatus" >
+                                    <option value="">所有</option>
+                                    <option value="0">在线</option>
+                                    <option value="1">离线</option>
+                                </select>
+                            </li>
+
+                            <li>
+                                启用禁用：
+                                <select name="enableFlag" >
+                                    <option value="">所有</option>
+                                    <option value="1">启用</option>
+                                    <option value="0">禁用</option>
+                                </select>
+                            </li>
+
+                 <!--           <li class="select-time">
+                                <label>卡片到期时间：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginExpireTime]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endExpireTime]"/>
+                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="terminal:info:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="terminal:info:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="terminal:info:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="terminal:info:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('terminal:info:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('terminal:info:remove')}]];
+        var gpsLogFlag = [[${@permission.hasPermi('terminal:info:gpsLog')}]];
+        var prefix = ctx + "terminal/info";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "定位卡",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'terminalId', 
+                    title : '卡片编码',
+                    align: "center"
+                },
+                {
+                    field : 'terminalName', 
+                    title : '卡片名称',
+                    align: "center"
+                },
+                {
+                    field : 'terminalGroupName',
+                    title : '卡片分组',
+                    align: "center"
+                },
+                    {
+                        field: 'terminalStatus',
+                        title: '卡片状态',
+                        align: "center",
+                        formatter: function(value, row, index) {
+                            if (row.terminalStatus == 0) {
+                                return '在线';
+                            }else if(row.terminalStatus == 1) {
+                                return '离线';
+                            }else{
+                                return '-';
+                            }
+                        }
+                    },
+                {
+                     field: 'enableFlag',
+                     title: '启用禁用',
+                     align: "center",
+                     formatter: function(value, row, index) {
+                         if (row.enableFlag == 0) {
+                             return '禁用';
+                         }else if(row.enableFlag == 1) {
+                            return '启用';
+                         }else{
+                             return '-';
+                         }
+                     }
+                 },
+                {
+                    field : 'batteryPercentage', 
+                    title : '电量百分比',
+                    align: "center"
+                },
+                    {
+                        field : 'createTime',
+                        title : '开卡时间',
+                        align: "center"
+                    },
+                {
+                    field : 'expireTime', 
+                    title : '卡片到期时间',
+                    align: "center"
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.terminalId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        actions.push('<a class="btn btn-success btn-xs ' + gpsLogFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalId + '\')"><i class="fa fa-remove"></i> GPS定位</a>');
+                        actions.push('<a class="btn btn-success btn-xs ' + gpsLogFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalId + '\')"><i class="fa fa-remove"></i> 导航</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

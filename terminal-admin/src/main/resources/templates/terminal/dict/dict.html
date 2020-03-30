@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('定位卡字典列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>终端字典名称：</label>
+                                <input type="text" name="terminalDictName"/>
+                            </li>
+                            <li>
+                                <label>终端字典备注信息：</label>
+                                <input type="text" name="terminalDictMemo"/>
+                            </li>
+                            <li>
+                                终端类型：
+                                <select name="enableFlag" >
+                                    <option value="">所有</option>
+                                    <option value="0">终端厂商</option>
+                                    <option value="1">终端设备</option>
+                                </select>
+                            </li>
+                            <li>
+                                状态：
+                                <select name="enableFlag" >
+                                    <option value="">所有</option>
+                                    <option value="1">启用</option>
+                                    <option value="0">禁用</option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="terminal:dict:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="terminal:dict:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="terminal:dict:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="terminal:dict:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('terminal:dict:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('terminal:dict:remove')}]];
+        var prefix = ctx + "terminal/dict";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "定位卡字典",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'terminalDictCode', 
+                    title : '字典编码',
+                    align: "center"
+                },
+                {
+                    field : 'terminalDictName', 
+                    title : '典名称',
+                    align: "center"
+                },
+                {
+                    field : 'terminalDictMemo', 
+                    title : '备注信息',
+                    align: "center"
+                },
+                    {
+                        field: 'terminalDictType',
+                        title: '终端类型',
+                        align: "center",
+                        formatter: function(value, row, index) {
+                            if (row.terminalDictType == 0) {
+                                return '终端厂商';
+                            }else if(row.terminalDictType == 1) {
+                                return '终端设备';
+                            }else{
+                                return '-';
+                            }
+                        }
+                    },
+                    {
+                        field: 'enableFlag',
+                        title: '启用禁用',
+                        align: "center",
+                        formatter: function(value, row, index) {
+                            if (row.enableFlag == 0) {
+                                return '禁用';
+                            }else if(row.enableFlag == 1) {
+                                return '启用';
+                            }else{
+                                return '-';
+                            }
+                        }
+                    },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalDictCode + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.terminalDictCode + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增定位卡定位记录')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-log-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">定位卡主键：</label>
+                <div class="col-sm-8">
+                    <input name="terminalId" class="form-control" type="text" >
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">经度：</label>
+                <div class="col-sm-8">
+                    <input name="longitude" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">纬度：</label>
+                <div class="col-sm-8">
+                    <input name="latitude" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">上报时的电量百分比：</label>
+                <div class="col-sm-8">
+                    <input name="batteryPercentage" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">电子围栏标志：:</label>
+                <div class="col-sm-8">
+                    <select name="fenceFlag" class="form-control" >
+                        <option value="0">不在围栏内</option>
+                        <option value="1">在围栏内</option>
+                        <option value="2">未设置围栏</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "terminal/log"
+        $("#form-log-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-log-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

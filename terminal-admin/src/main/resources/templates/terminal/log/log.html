@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('定位卡定位记录列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>卡片ID：</label>
+                                <input type="text" name="terminalId"/>
+                            </li>
+                            <li>
+                                <label>卡片名称：</label>
+                                <input type="text" name="terminalName"/>
+                            </li>
+                            <li>
+                                <label>经度：</label>
+                                <input type="text" name="longitude" style="width:100px;"/>
+                            </li>
+                            <li>
+                                <label>纬度：</label>
+                                <input type="text" name="latitude" style="width:100px;"/>
+                            </li>
+
+                            <li>
+                                围栏标志：
+                                <select name="fenceFlag" style="width:100px;" >
+                                    <option value="">所有</option>
+                                    <option value="0">不在围栏内</option>
+                                    <option value="1">在围栏内</option>
+                                    <option value="2">未设置围栏</option>
+                                </select>
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="terminal:log:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="terminal:log:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="terminal:log:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="terminal:log:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('terminal:log:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('terminal:log:remove')}]];
+        var prefix = ctx + "terminal/log";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "定位卡定位记录",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'serialId', 
+                    title : 'GPS记录主键id',
+                    visible: false
+                },
+                    {
+                        field : 'terminalId',
+                        title : '卡片主键',
+                        align: "center"
+                    },
+                    {
+                        field : 'terminalName',
+                        title : '卡片名称',
+                        align: "center"
+                    },
+                {
+                    field : 'longitude', 
+                    title : '经度',
+                    align: "center"
+                },
+                {
+                    field : 'latitude', 
+                    title : '纬度',
+                    align: "center"
+                },
+                {
+                    field : 'batteryPercentage', 
+                    title : '上报时的电量百分比',
+                    align: "center"
+                },
+                   {
+                        field: 'fenceFlag',
+                        title: '电子围栏',
+                        align: "center",
+                        formatter: function(value, row, index) {
+                            if (row.fenceFlag == 0) {
+                                return '不在围栏内';
+                            }else if(row.fenceFlag == 1) {
+                                return '在围栏内';
+                            }else if(row.fenceFlag == 2) {
+                                return '未设置围栏';
+                            }else{
+                                return '-';
+                            }
+                        }
+                    },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.serialId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.serialId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

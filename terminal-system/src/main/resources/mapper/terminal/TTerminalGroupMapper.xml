@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.terminal.mapper.TTerminalGroupMapper">
+    
+    <resultMap type="TTerminalGroup" id="TTerminalGroupResult">
+        <result property="terminalGroupId"    column="terminal_group_id"    />
+        <result property="terminalGroupName"    column="terminal_group_name"    />
+        <result property="terminalGroupLevel"    column="terminal_group_level"    />
+        <result property="parentTerminalGroupId"    column="parent_terminal_group_id"    />
+        <result property="parentTerminalGroupName"    column="parent_terminal_group_name"    />
+        <result property="enableFlag"    column="enable_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTTerminalGroupVo">
+        SELECT
+            g.terminal_group_id,
+            g.terminal_group_name,
+            g.terminal_group_level,
+            g.parent_terminal_group_id,
+            pg.terminal_group_name AS parent_terminal_group_name,
+            g.enable_flag,
+            g.create_time,
+            g.update_time
+        FROM
+            t_terminal_group g
+            LEFT JOIN t_terminal_group pg ON g.parent_terminal_group_id = pg.terminal_group_id
+    </sql>
+
+    <select id="selectTTerminalGroupList" parameterType="TTerminalGroup" resultMap="TTerminalGroupResult">
+        <include refid="selectTTerminalGroupVo"/>
+        <where>  
+            <if test="terminalGroupName != null  and terminalGroupName != ''"> and g.terminal_group_name like concat('%', #{terminalGroupName}, '%')</if>
+            <if test="terminalGroupLevel != null "> and g.terminal_group_level = #{terminalGroupLevel}</if>
+            <if test="parentTerminalGroupId != null  and parentTerminalGroupId != ''"> and g.parent_terminal_group_id = #{parentTerminalGroupId}</if>
+            <if test="enableFlag != null "> and g.enable_flag = #{enableFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectTTerminalGroupById" parameterType="String" resultMap="TTerminalGroupResult">
+        <include refid="selectTTerminalGroupVo"/>
+        where g.terminal_group_id = #{terminalGroupId}
+    </select>
+        
+    <insert id="insertTTerminalGroup" parameterType="TTerminalGroup">
+        insert into t_terminal_group
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="terminalGroupId != null  and terminalGroupId != ''">terminal_group_id,</if>
+            <if test="terminalGroupName != null  and terminalGroupName != ''">terminal_group_name,</if>
+            <if test="terminalGroupLevel != null ">terminal_group_level,</if>
+            <if test="parentTerminalGroupId != null  and parentTerminalGroupId != ''">parent_terminal_group_id,</if>
+            <if test="enableFlag != null ">enable_flag,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="terminalGroupId != null  and terminalGroupId != ''">#{terminalGroupId},</if>
+            <if test="terminalGroupName != null  and terminalGroupName != ''">#{terminalGroupName},</if>
+            <if test="terminalGroupLevel != null ">#{terminalGroupLevel},</if>
+            <if test="parentTerminalGroupId != null  and parentTerminalGroupId != ''">#{parentTerminalGroupId},</if>
+            <if test="enableFlag != null ">#{enableFlag},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTTerminalGroup" parameterType="TTerminalGroup">
+        update t_terminal_group
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="terminalGroupName != null  and terminalGroupName != ''">terminal_group_name = #{terminalGroupName},</if>
+            <if test="terminalGroupLevel != null ">terminal_group_level = #{terminalGroupLevel},</if>
+            <if test="parentTerminalGroupId != null  and parentTerminalGroupId != ''">parent_terminal_group_id = #{parentTerminalGroupId},</if>
+            <if test="enableFlag != null ">enable_flag = #{enableFlag},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where terminal_group_id = #{terminalGroupId}
+    </update>
+
+    <delete id="deleteTTerminalGroupById" parameterType="String">
+        delete from t_terminal_group where terminal_group_id = #{terminalGroupId}
+    </delete>
+
+    <delete id="deleteTTerminalGroupByIds" parameterType="String">
+        delete from t_terminal_group where terminal_group_id in 
+        <foreach item="terminalGroupId" collection="array" open="(" separator="," close=")">
+            #{terminalGroupId}
+        </foreach>
+    </delete>
+    
+</mapper>

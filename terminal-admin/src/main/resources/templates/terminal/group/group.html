@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('卡片分组信息列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>分组名称：</label>
+                                <input type="text" name="terminalGroupName"/>
+                            </li>
+                            <li>
+                                <label>分组层级</label>
+                                <input type="text" name="terminalGroupLevel"/>
+                            </li>
+                            <li>
+                                启用禁用：
+                                <select name="enableFlag" >
+                                    <option value="">所有</option>
+                                    <option value="1">启用</option>
+                                    <option value="0">禁用</option>
+                                </select>
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="terminal:group:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="terminal:group:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="terminal:group:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="terminal:group:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('terminal:group:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('terminal:group:remove')}]];
+        var prefix = ctx + "terminal/group";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "卡片分组",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'terminalGroupId', 
+                    title : '分组主键id',
+                    align: "center",
+                    visible: false
+                },
+                {
+                    field : 'terminalGroupName',
+                    align: "center",
+                    title : '分组名称'
+                },
+                {
+                    field : 'terminalGroupLevel', 
+                    title : '分组层级',
+                    align: "center"
+                },
+                {
+                    field : 'parentTerminalGroupId',
+                    title : '上级分组id',
+                    align: "center"
+                },
+                    {
+                        field : 'parentTerminalGroupName',
+                        title : '上级分组名称',
+                        align: "center"
+                    },
+                {
+                        field: 'enableFlag',
+                        title: '启用禁用',
+                        align: "center",
+                        formatter: function(value, row, index) {
+                            if (row.enableFlag == 0) {
+                                return '禁用';
+                            }else if(row.enableFlag == 1) {
+                                return '启用';
+                            }else{
+                                return '-';
+                            }
+                        }
+                 },
+                    {
+                        field : 'createTime',
+                        title : '创建时间',
+                        align: "center"
+                    },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalGroupId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.terminalGroupId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

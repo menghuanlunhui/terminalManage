@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改亲情号码')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-kinship-edit" th:object="${tTerminalKinship}">
+            <input name="terminalKinshipId" th:field="*{terminalKinshipId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">卡片ID：</label>
+                <div class="col-sm-8">
+                    <input name="terminalId" th:field="*{terminalId}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">卡片名称：</label>
+                <div class="col-sm-8">
+                    <input name="terminalName" th:field="*{terminalName}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">亲情手机号：</label>
+                <div class="col-sm-8">
+                    <input name="terminalKinshipPhone" th:field="*{terminalKinshipPhone}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">联络人姓名：</label>
+                <div class="col-sm-8">
+                    <input name="terminalKinshipContactor" th:field="*{terminalKinshipContactor}" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">号码类型：:</label>
+                <div class="col-sm-8">
+                    <select name="terminalKinshipType" class="form-control" th:field="*{terminalKinshipType}">
+                        <option value="0">亲情号</option>
+                        <option value="1">SOS号码</option>
+                    </select>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "terminal/kinship";
+        $("#form-kinship-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-kinship-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

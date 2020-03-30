@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.terminal.mapper.TTerminalKinshipMapper">
+    
+    <resultMap type="TTerminalKinship" id="TTerminalKinshipResult">
+        <result property="terminalKinshipId"    column="terminal_kinship_id"    />
+        <result property="terminalId"    column="terminal_id"    />
+        <result property="terminalName"    column="terminal_name"    />
+        <result property="terminalKinshipPhone"    column="terminal_kinship_phone"    />
+        <result property="terminalKinshipContactor"    column="terminal_kinship_contactor"    />
+        <result property="terminalKinshipType"    column="terminal_kinship_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTTerminalKinshipVo">
+        SELECT
+            tk.terminal_kinship_id,
+            tk.terminal_id,
+            tk.terminal_kinship_phone,
+            tk.terminal_kinship_contactor,
+            tk.terminal_kinship_type,
+            tk.create_time,
+            tk.update_time,
+            ti.terminal_name
+        FROM
+            t_terminal_kinship tk left join t_terminal_info ti on tk.terminal_id = ti.terminal_id
+    </sql>
+
+    <select id="selectTTerminalKinshipList" parameterType="TTerminalKinship" resultMap="TTerminalKinshipResult">
+        <include refid="selectTTerminalKinshipVo"/>
+        <where>  
+            <if test="terminalId != null  and terminalId != ''"> and tk.terminal_id = #{terminalId}</if>
+            <if test="terminalKinshipPhone != null  and terminalKinshipPhone != ''"> and tk.terminal_kinship_phone like concat('%', #{terminalKinshipPhone}, '%')</if>
+            <if test="terminalKinshipContactor != null  and terminalKinshipContactor != ''"> and tk.terminal_kinship_contactor like concat('%', #{terminalKinshipContactor}, '%')</if>
+            <if test="terminalKinshipType != null "> and tk.terminal_kinship_type = #{terminalKinshipType}</if>
+            <if test="terminalName != null  and terminalName != ''"> and ti.terminal_name like concat('%', #{terminalName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTTerminalKinshipById" parameterType="String" resultMap="TTerminalKinshipResult">
+        <include refid="selectTTerminalKinshipVo"/>
+        where tk.terminal_kinship_id = #{terminalKinshipId}
+    </select>
+        
+    <insert id="insertTTerminalKinship" parameterType="TTerminalKinship">
+        insert into t_terminal_kinship
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="terminalKinshipId != null  and terminalKinshipId != ''">terminal_kinship_id,</if>
+            <if test="terminalId != null  and terminalId != ''">terminal_id,</if>
+            <if test="terminalKinshipPhone != null  and terminalKinshipPhone != ''">terminal_kinship_phone,</if>
+            <if test="terminalKinshipContactor != null  and terminalKinshipContactor != ''">terminal_kinship_contactor,</if>
+            <if test="terminalKinshipType != null ">terminal_kinship_type,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="terminalKinshipId != null  and terminalKinshipId != ''">#{terminalKinshipId},</if>
+            <if test="terminalId != null  and terminalId != ''">#{terminalId},</if>
+            <if test="terminalKinshipPhone != null  and terminalKinshipPhone != ''">#{terminalKinshipPhone},</if>
+            <if test="terminalKinshipContactor != null  and terminalKinshipContactor != ''">#{terminalKinshipContactor},</if>
+            <if test="terminalKinshipType != null ">#{terminalKinshipType},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTTerminalKinship" parameterType="TTerminalKinship">
+        update t_terminal_kinship
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="terminalId != null  and terminalId != ''">terminal_id = #{terminalId},</if>
+            <if test="terminalKinshipPhone != null  and terminalKinshipPhone != ''">terminal_kinship_phone = #{terminalKinshipPhone},</if>
+            <if test="terminalKinshipContactor != null  and terminalKinshipContactor != ''">terminal_kinship_contactor = #{terminalKinshipContactor},</if>
+            <if test="terminalKinshipType != null ">terminal_kinship_type = #{terminalKinshipType},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where terminal_kinship_id = #{terminalKinshipId}
+    </update>
+
+    <delete id="deleteTTerminalKinshipById" parameterType="String">
+        delete from t_terminal_kinship where terminal_kinship_id = #{terminalKinshipId}
+    </delete>
+
+    <delete id="deleteTTerminalKinshipByIds" parameterType="String">
+        delete from t_terminal_kinship where terminal_kinship_id in 
+        <foreach item="terminalKinshipId" collection="array" open="(" separator="," close=")">
+            #{terminalKinshipId}
+        </foreach>
+    </delete>
+    
+</mapper>

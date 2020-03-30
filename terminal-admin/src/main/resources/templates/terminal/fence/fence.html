@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('定位卡电子围栏配置列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>卡片主键：</label>
+                                <input type="text" name="terminalId"/>
+                            </li>
+
+                            <li>
+                                <label>卡片名称：</label>
+                                <input type="text" name="terminalName"/>
+                            </li>
+
+                            <li>
+                                类型：
+                                <select name="terminalFenceType" >
+                                    <option value="">所有</option>
+                                    <option value="0">圆形</option>
+                                    <option value="1">椭圆形</option>
+                                    <option value="2">线条形</option>
+                                </select>
+                            </li>
+
+                            <li>
+                                状态：
+                                <select name="enableFlag" >
+                                    <option value="">所有</option>
+                                    <option value="1">启用</option>
+                                    <option value="0">禁用</option>
+                                </select>
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="terminal:fence:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="terminal:fence:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="terminal:fence:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="terminal:fence:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('terminal:fence:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('terminal:fence:remove')}]];
+        var prefix = ctx + "terminal/fence";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "电子围栏",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'terminalFenceId', 
+                    title : '主键id',
+                    visible: false
+                },
+                {
+                    field : 'terminalId', 
+                    title : '卡片ID',
+                    align: "center"
+                }, {
+                        field : 'terminalName',
+                        title : '卡片名称',
+                        align: "center"
+                    },
+                    {
+                        field: 'terminalFenceType',
+                        title: '电子围栏类型',
+                        align: "center",
+                        formatter: function(value, row, index) {
+                            if (row.terminalFenceType == 0) {
+                                return '圆形';
+                            }else if(row.terminalFenceType == 1) {
+                                return '椭圆形';
+                            }else if(row.terminalFenceType == 2) {
+                                return '线条形';
+                            }else{
+                                return '-';
+                            }
+                        }
+                    },     {
+                        field: 'enableFlag',
+                        title: '启用禁用',
+                        align: "center",
+                        formatter: function(value, row, index) {
+                            if (row.enableFlag == 0) {
+                                return '禁用';
+                            }else if(row.enableFlag == 1) {
+                                return '启用';
+                            }else{
+                                return '-';
+                            }
+                        }
+                    },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalFenceId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.terminalFenceId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

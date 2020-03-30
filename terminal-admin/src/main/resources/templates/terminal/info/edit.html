@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改定位卡基础信息')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-info-edit" th:object="${tTerminalInfo}">
+            <input name="terminalId" th:field="*{terminalId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">卡片名称：</label>
+                <div class="col-sm-8">
+                    <input name="terminalName" th:field="*{terminalName}" class="form-control" type="text">
+                </div>
+            </div>
+
+             <div class="form-group">
+                <label class="col-sm-3 control-label">卡片分组：</label>
+                <div class="col-sm-8">
+                    <select name="terminalGroupId" id="terminalGroupId"  class="form-control" >
+                        <option th:each="list:${list}" th:value="${list.terminalGroupId}" th:text="${list.terminalGroupName}" th:field="*{terminalGroupId}"></option>
+                    </select>
+                </div>
+              </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">卡片状态：:</label>
+                <div class="col-sm-8">
+                    <select name="terminalStatus" class="form-control" th:field="*{terminalStatus}">
+                        <option value="0">在线</option>
+                        <option value="1">离线</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">启用禁用：:</label>
+                <div class="col-sm-8">
+                    <select name="enableFlag" class="form-control" th:field="*{enableFlag}">
+                        <option value="1">启用</option>
+                        <option value="0">禁用</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">电量百分比：</label>
+                <div class="col-sm-8">
+                    <input name="batteryPercentage" th:field="*{batteryPercentage}" class="form-control" type="text">
+                </div>
+            </div>
+
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">卡片到期时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="expireTime" th:value="${#dates.format(tTerminalInfo.expireTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "terminal/info";
+        $("#form-info-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-info-edit').serialize());
+            }
+        }
+
+        $("input[name='expireTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

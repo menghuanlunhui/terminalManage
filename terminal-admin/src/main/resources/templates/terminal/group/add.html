@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增定位卡分组信息')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-group-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">分组名称：</label>
+                <div class="col-sm-8">
+                    <input name="terminalGroupName" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">上级分组：</label>
+                <div class="col-sm-8">
+                    <select name="parentTerminalGroupId" id="parentTerminalGroupId" class="form-control" >
+                        <option value="0">默认顶级分组</option>
+                        <option th:each="list:${list}" th:value="${list.terminalGroupId}" th:text="${list.terminalGroupName}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">当前分组层级：</label>
+                <div class="col-sm-8">
+                    <input name="terminalGroupLevel" id="terminalGroupLevel" class="form-control" type="text" value="0" readonly placeholder="请先选择上级分组，默认顶级">
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">启用禁用：:</label>
+                <div class="col-sm-8">
+                    <select name="enableFlag" class="form-control" >
+                        <option value="1">启用</option>
+                        <option value="0">禁用</option>
+                    </select>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "terminal/group"
+        $("#form-group-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-group-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

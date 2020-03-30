@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.terminal.mapper.TTerminalAlarmMapper">
+    
+    <resultMap type="TTerminalAlarm" id="TTerminalAlarmResult">
+        <result property="terminalAlarmId"    column="terminal_alarm_id"    />
+        <result property="terminalId"    column="terminal_id"    />
+        <result property="terminalName"    column="terminal_name"    />
+        <result property="terminalAlarmCycleDay"    column="terminal_alarm_cycle_day"    />
+        <result property="terminalAlarmPoint"    column="terminal_alarm_point"    />
+        <result property="terminalAlarmType"    column="terminal_alarm_type"    />
+        <result property="enableFlag"    column="enable_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTTerminalAlarmVo">
+        SELECT
+             ta.terminal_alarm_id,
+             ta.terminal_id,
+             ta.terminal_alarm_cycle_day,
+             ta.terminal_alarm_point,
+             ta.terminal_alarm_type,
+             ta.enable_flag,
+             ta.create_time,
+             ta.update_time,
+             ti.terminal_name
+        FROM
+            t_terminal_alarm  ta left join t_terminal_info ti on ta.terminal_id = ti.terminal_id
+    </sql>
+
+    <select id="selectTTerminalAlarmList" parameterType="TTerminalAlarm" resultMap="TTerminalAlarmResult">
+        <include refid="selectTTerminalAlarmVo"/>
+        <where>  
+            <if test="terminalId != null  and terminalId != ''"> and  ta.terminal_id = #{terminalId}</if>
+            <if test="terminalAlarmCycleDay != null  and terminalAlarmCycleDay != ''"> and  ta.terminal_alarm_cycle_day = #{terminalAlarmCycleDay}</if>
+            <if test="terminalAlarmPoint != null  and terminalAlarmPoint != ''"> and  ta.terminal_alarm_point = #{terminalAlarmPoint}</if>
+            <if test="terminalAlarmType != null "> and  ta.terminal_alarm_type = #{terminalAlarmType}</if>
+            <if test="enableFlag != null "> and  ta.enable_flag = #{enableFlag}</if>
+            <if test="terminalName != null  and terminalName != ''"> and ti.terminal_name like concat('%', #{terminalName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTTerminalAlarmById" parameterType="String" resultMap="TTerminalAlarmResult">
+        <include refid="selectTTerminalAlarmVo"/>
+        where  ta.terminal_alarm_id = #{terminalAlarmId}
+    </select>
+        
+    <insert id="insertTTerminalAlarm" parameterType="TTerminalAlarm">
+        insert into t_terminal_alarm
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="terminalAlarmId != null  and terminalAlarmId != ''">terminal_alarm_id,</if>
+            <if test="terminalId != null  and terminalId != ''">terminal_id,</if>
+            <if test="terminalAlarmCycleDay != null  and terminalAlarmCycleDay != ''">terminal_alarm_cycle_day,</if>
+            <if test="terminalAlarmPoint != null  and terminalAlarmPoint != ''">terminal_alarm_point,</if>
+            <if test="terminalAlarmType != null ">terminal_alarm_type,</if>
+            <if test="enableFlag != null ">enable_flag,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="terminalAlarmId != null  and terminalAlarmId != ''">#{terminalAlarmId},</if>
+            <if test="terminalId != null  and terminalId != ''">#{terminalId},</if>
+            <if test="terminalAlarmCycleDay != null  and terminalAlarmCycleDay != ''">#{terminalAlarmCycleDay},</if>
+            <if test="terminalAlarmPoint != null  and terminalAlarmPoint != ''">#{terminalAlarmPoint},</if>
+            <if test="terminalAlarmType != null ">#{terminalAlarmType},</if>
+            <if test="enableFlag != null ">#{enableFlag},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTTerminalAlarm" parameterType="TTerminalAlarm">
+        update t_terminal_alarm
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="terminalId != null  and terminalId != ''">terminal_id = #{terminalId},</if>
+            <if test="terminalAlarmCycleDay != null  and terminalAlarmCycleDay != ''">terminal_alarm_cycle_day = #{terminalAlarmCycleDay},</if>
+            <if test="terminalAlarmPoint != null  and terminalAlarmPoint != ''">terminal_alarm_point = #{terminalAlarmPoint},</if>
+            <if test="terminalAlarmType != null ">terminal_alarm_type = #{terminalAlarmType},</if>
+            <if test="enableFlag != null ">enable_flag = #{enableFlag},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where terminal_alarm_id = #{terminalAlarmId}
+    </update>
+
+    <delete id="deleteTTerminalAlarmById" parameterType="String">
+        delete from t_terminal_alarm where terminal_alarm_id = #{terminalAlarmId}
+    </delete>
+
+    <delete id="deleteTTerminalAlarmByIds" parameterType="String">
+        delete from t_terminal_alarm where terminal_alarm_id in 
+        <foreach item="terminalAlarmId" collection="array" open="(" separator="," close=")">
+            #{terminalAlarmId}
+        </foreach>
+    </delete>
+    
+</mapper>

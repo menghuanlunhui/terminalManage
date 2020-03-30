@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改定位卡分组信息')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-group-edit" th:object="${tTerminalGroup}">
+            <input name="terminalGroupId" th:field="*{terminalGroupId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">分组名称：</label>
+                <div class="col-sm-8">
+                    <input name="terminalGroupName" th:field="*{terminalGroupName}" class="form-control" type="text">
+                </div>
+            </div>
+
+       <!--     <div class="form-group">
+                <label class="col-sm-3 control-label">上级分组：</label>
+                <div class="col-sm-8">
+                    <input name="parentTerminalGroupName" th:field="*{parentTerminalGroupName}" class="form-control" type="text">
+                </div>
+            </div>-->
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">上级分组：</label>
+                <div class="col-sm-8">
+                    <select name="parentTerminalGroupId" id="parentTerminalGroupId"  class="form-control" >
+                       <!-- <option value="0">默认顶级分组</option>-->
+                        <option th:each="list:${list}" th:value="${list.terminalGroupId}" th:text="${list.terminalGroupName}" th:field="*{parentTerminalGroupId}"></option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">启用禁用标志：</label>
+                <div class="col-sm-8">
+                        <select name="enableFlag" class="form-control" th:field="*{enableFlag}">
+                            <option value="1">启用</option>
+                            <option value="0">禁用</option>
+                        </select>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "terminal/group";
+        $("#form-group-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-group-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

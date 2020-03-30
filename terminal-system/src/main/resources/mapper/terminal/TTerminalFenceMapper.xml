@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.terminal.mapper.TTerminalFenceMapper">
+    
+    <resultMap type="TTerminalFence" id="TTerminalFenceResult">
+        <result property="terminalFenceId"    column="terminal_fence_id"    />
+        <result property="terminalId"    column="terminal_id"    />
+        <result property="terminalName"    column="terminal_name"    />
+        <result property="terminalFenceType"    column="terminal_fence_type"    />
+        <result property="terminalFencePoint"    column="terminal_fence_point"    />
+        <result property="enableFlag"    column="enable_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTTerminalFenceVo">
+        SELECT
+            tf.terminal_fence_id,
+            tf.terminal_id,
+            tf.terminal_fence_type,
+            tf.terminal_fence_point,
+            tf.enable_flag,
+            tf.create_time,
+            tf.update_time,
+            ti.terminal_name
+        FROM
+            t_terminal_fence tf left join t_terminal_info ti on tf.terminal_id = ti.terminal_id
+    </sql>
+
+    <select id="selectTTerminalFenceList" parameterType="TTerminalFence" resultMap="TTerminalFenceResult">
+        <include refid="selectTTerminalFenceVo"/>
+        <where>  
+            <if test="terminalId != null  and terminalId != ''"> and tf.terminal_id = #{terminalId}</if>
+            <if test="terminalFenceType != null  and terminalFenceType != ''"> and tf.terminal_fence_type = #{terminalFenceType}</if>
+            <if test="terminalFencePoint != null  and terminalFencePoint != ''"> and tf.terminal_fence_point = #{terminalFencePoint}</if>
+            <if test="enableFlag != null "> and tf.enable_flag = #{enableFlag}</if>
+            <if test="terminalName != null  and terminalName != ''"> and ti.terminal_name like concat('%', #{terminalName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTTerminalFenceById" parameterType="String" resultMap="TTerminalFenceResult">
+        <include refid="selectTTerminalFenceVo"/>
+        where tf.terminal_fence_id = #{terminalFenceId}
+    </select>
+        
+    <insert id="insertTTerminalFence" parameterType="TTerminalFence">
+        insert into t_terminal_fence
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="terminalFenceId != null  and terminalFenceId != ''">terminal_fence_id,</if>
+            <if test="terminalId != null  and terminalId != ''">terminal_id,</if>
+            <if test="terminalFenceType != null  and terminalFenceType != ''">terminal_fence_type,</if>
+            <if test="terminalFencePoint != null  and terminalFencePoint != ''">terminal_fence_point,</if>
+            <if test="enableFlag != null ">enable_flag,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="terminalFenceId != null  and terminalFenceId != ''">#{terminalFenceId},</if>
+            <if test="terminalId != null  and terminalId != ''">#{terminalId},</if>
+            <if test="terminalFenceType != null  and terminalFenceType != ''">#{terminalFenceType},</if>
+            <if test="terminalFencePoint != null  and terminalFencePoint != ''">#{terminalFencePoint},</if>
+            <if test="enableFlag != null ">#{enableFlag},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTTerminalFence" parameterType="TTerminalFence">
+        update t_terminal_fence
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="terminalId != null  and terminalId != ''">terminal_id = #{terminalId},</if>
+            <if test="terminalFenceType != null  and terminalFenceType != ''">terminal_fence_type = #{terminalFenceType},</if>
+            <if test="terminalFencePoint != null  and terminalFencePoint != ''">terminal_fence_point = #{terminalFencePoint},</if>
+            <if test="enableFlag != null ">enable_flag = #{enableFlag},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where terminal_fence_id = #{terminalFenceId}
+    </update>
+
+    <delete id="deleteTTerminalFenceById" parameterType="String">
+        delete from t_terminal_fence where terminal_fence_id = #{terminalFenceId}
+    </delete>
+
+    <delete id="deleteTTerminalFenceByIds" parameterType="String">
+        delete from t_terminal_fence where terminal_fence_id in 
+        <foreach item="terminalFenceId" collection="array" open="(" separator="," close=")">
+            #{terminalFenceId}
+        </foreach>
+    </delete>
+    
+</mapper>
