@@ -142,26 +142,34 @@
                         title : '开卡时间',
                         align: "center"
                     },
-                {
+              /*  {
                     field : 'expireTime', 
                     title : '卡片到期时间',
                     align: "center"
-                },
+                },*/
                 {
                     title: '操作',
                     align: 'center',
                     formatter: function(value, row, index) {
                         var actions = [];
                         actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
-                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.terminalId + '\')"><i class="fa fa-remove"></i>删除</a>');
-                        actions.push('<a class="btn btn-success btn-xs ' + gpsLogFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalId + '\')"><i class="fa fa-remove"></i> GPS定位</a>');
-                        actions.push('<a class="btn btn-success btn-xs ' + gpsLogFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.terminalId + '\')"><i class="fa fa-remove"></i> 导航</a>');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.terminalId + '\')"><i class="fa fa-remove"></i>删除</a> ');
+                        actions.push('<a class="btn btn-primary btn-xs ' + gpsLogFlag + '" href="javascript:void(0)" onclick="gpsLogClick(\'' + row.terminalId + '\')"><i class="fa fa-check-square-o"></i>地图</a> ');
                         return actions.join('');
                     }
                 }]
             };
             $.table.init(options);
         });
+
+        /* 地图 */
+        function gpsLogClick(terminalId) {
+            var url = prefix+ '/gpsLog/' + terminalId;
+            //$.modal.open("地图", url);
+            //window.location.href=url;
+          // window.open(url);
+            window.open(url,'_blank');
+        }
     </script>
 </body>
 </html>

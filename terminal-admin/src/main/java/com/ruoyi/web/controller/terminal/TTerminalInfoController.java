@@ -1,9 +1,13 @@
 package com.ruoyi.web.controller.terminal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.ruoyi.common.json.JSONObject;
+import com.ruoyi.terminal.domain.TTerminalGpsLog;
 import com.ruoyi.terminal.domain.TTerminalGroup;
+import com.ruoyi.terminal.service.ITTerminalGpsLogService;
 import com.ruoyi.terminal.service.ITTerminalGroupService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +44,9 @@ public class TTerminalInfoController extends BaseController
 
     @Autowired
     private ITTerminalGroupService tTerminalGroupService;
+
+    @Autowired
+    private ITTerminalGpsLogService tTerminalGpsLogService;
 
     @RequiresPermissions("terminal:info:view")
     @GetMapping()
@@ -140,4 +147,33 @@ public class TTerminalInfoController extends BaseController
     {
         return toAjax(tTerminalInfoService.deleteTTerminalInfoByIds(ids));
     }
+
+
+
+    /**
+     * 导航信息
+     */
+    @GetMapping("/gpsLog/{terminalId}")
+    public String gpsLog(@PathVariable("terminalId") String terminalId, ModelMap mmap)
+    {
+        mmap.put("terminalId", terminalId);
+        return prefix + "/gpsLog";
+    }
+
+    @RequiresPermissions("terminal:info:edit")
+    @Log(title = "地图导航信息")
+    @PostMapping( "/gpsLogList")
+    @ResponseBody
+    public Object gpsLogList( String terminalId)
+    {
+        JSONObject jsonObject = new JSONObject();
+        TTerminalGpsLog tTerminalGpsLog = new TTerminalGpsLog();
+        tTerminalGpsLog.setTerminalId(terminalId);
+        List<TTerminalGpsLog> list = tTerminalGpsLogService.selectTTerminalGpsLogList(tTerminalGpsLog);
+        jsonObject.put("data",list);
+        jsonObject.put("status",1);
+        return jsonObject;
+
+    }
+
 }

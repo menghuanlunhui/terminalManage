@@ -39,6 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fenceFlag != null "> and tl.fence_flag = #{fenceFlag}</if>
             <if test="terminalName != null  and terminalName != ''"> and ti.terminal_name like concat('%', #{terminalName}, '%')</if>
         </where>
+        order by tl.create_time asc
     </select>
     
     <select id="selectTTerminalGpsLogById" parameterType="String" resultMap="TTerminalGpsLogResult">
