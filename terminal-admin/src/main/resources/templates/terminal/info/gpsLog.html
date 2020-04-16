@@ -5,6 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
 	<title>轨迹回放</title>
+    <th:block th:include="include :: header('参数列表')" />
 	<link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
 	<style>
 		html, body, #container {
@@ -24,7 +25,14 @@
 </head>
 <body>
 <input name="terminalId" id="terminalId" th:value="${terminalId}" hidden>
-<div class="button-group">
+<div class="button-group" >
+    <span class="select-time">
+    <label>轨迹时间：</label>
+    <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="startTime" style="width:200px;"/>
+    <span>-</span>
+    <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="endTime" style="width:200px;"/>
+    </span>
+    <input type="button" class="layui-btn layui-btn-mini layui-btn-normal" value="轨迹查询" id="search" onClick="search()"/>
     <input type="button" class="layui-btn layui-btn-mini layui-btn-normal" value="轨迹播放" id="move" style="display:none;" />
     <input type="button" class="layui-btn layui-btn-mini layui-btn-normal" value="暂停播放" id="pause" style="display:none;"/>
     <input type="button" class="layui-btn layui-btn-mini layui-btn-normal" value="继续播放" id="resume" style="display:none;"/>
@@ -38,12 +46,10 @@
 <script type="text/javascript" src="https://webapi.amap.com/ui/1.0/main.js?v-1.0.11"></script>
 <script>
 	var postData = {};
-	/*postData['rsearch'] = rsearch;
-	postData['uid'] = uid;
-	postData['stime'] = stime;
-	postData['etime'] = etime;*/
-	postData['ajax'] = 1;
-	var url = ctx + "terminal/info/gpsLogList?terminalId="+$("#terminalId").val(); //接口地址
+
+	postData['terminalId'] = $("#terminalId").val();
+
+	var url = ctx + "terminal/info/gpsLogList"; //接口地址
 
 	$.post(url,postData,function(res){
 		if(res.status == 1){
@@ -158,6 +164,122 @@
 				layer.msg(res.msg, {icon: 2});});
 		}},'json')
 
+    function search(){
+        postData['startTime'] = $("#startTime").val();
+        postData['endTime'] = $("#endTime").val();
+        $("#container").html("");
+        $.post(url,postData,function(res){
+            if(res.status == 1){
+                console.log(res);
+                $("#container").show();
+                var lnglatArr = new Array();
+                var i = 0;
+
+                $.grep(res.data,function(re){
+                    lnglatArr[i] = new AMap.LngLat(re.longitude,re.latitude);
+                    i = i+1;
+                })
+
+                AMap.convertFrom(lnglatArr, 'gps',function(status,result){
+                    console.log(result);
+
+                    var marker, lineArr = [];
+
+                    var map = new AMap.Map("container", {
+                        resizeEnable: true,
+                        center: [result.locations[0].lng, result.locations[0].lat],
+                        zoom: 13
+                    });
+
+                    marker = new AMap.Marker({
+                        map: map,
+                        position:[result.locations[0].lng, result.locations[0].lat],
+                        icon: "http://osswxxd.zhibang.com/img/dgPerson.png",
+                        offset: new AMap.Pixel(-26, -13),
+                        autoRotation: true
+                    });
+
+                    $.grep(result.locations,function(r){
+                        console.log(r);
+                        lineArr.push([r.lng, r.lat]);
+                    })
+
+                    // 绘制轨迹
+                    var polyline = new AMap.Polyline({
+                        map: map,
+                        path: lineArr,
+                        strokeColor: "#00A", //线颜色
+                        //strokeOpacity: 1, //线透明度
+                        strokeWeight: 3, //线宽
+                        //strokeStyle: "solid" //线样式
+                    });
+                    var passedPolyline = new AMap.Polyline({
+                        map: map,
+                        //path: lineArr,
+                        strokeColor: "#F00", //线颜色
+                        //strokeOpacity: 1, //线透明度
+                        strokeWeight: 3, //线宽
+                        //strokeStyle: "solid" //线样式
+                    });
+                    $("#move").show();
+                    $("#pause").show();
+                    $("#resume").show();
+                    $("#stop").show();
+
+                    AMapUI.loadUI(['overlay/SimpleInfoWindow'], function(SimpleInfoWindow) {
+                        infoWindow = new SimpleInfoWindow({
+                            infoTitle: '<strong>设备轨迹</strong>',
+                            infoBody: '点击开始动画可进行播放',
+                            //基点指向marker的头部位置
+                            offset: new AMap.Pixel(0, -31)
+                        });
+                        infoWindow.open(map, marker.getPosition());
+                    })
+
+                    marker.on('click',function(e){
+                        infoWindow.open(map, marker.getPosition());
+                    });
+
+                    marker.on('moving',function(e){
+                        var len = e.passedPath.length;
+                        /*var rate = res.data[len-1].rate;*/
+                        var location = e.passedPath[len-1];
+                        var lll = new AMap.LngLat(location.lng,location.lat);
+
+                        /*infoWindow.setInfoBody('<div>经度：'+location.lng+'<br>纬度：'+location.lat+'<br>速度：'+rate+' km/h</div>');*/
+                        infoWindow.setInfoBody('<div>经度：'+location.lng+'<br>纬度：'+location.lat+'</div>');
+                        infoWindow.setPosition(lll);
+                        passedPolyline.setPath(e.passedPath);
+                    })
+                    map.setFitView();
+
+                    AMap.event.addDomListener(document.getElementById('move'), 'click', function() {
+                        marker.moveAlong(lineArr, 500,function(k){
+                            return k;
+                        });
+                    }, false);
+
+                    AMap.event.addDomListener(document.getElementById('pause'), 'click', function() {
+                        marker.pauseMove();
+                    }, false);
+                    AMap.event.addDomListener(document.getElementById('resume'), 'click', function() {
+                        marker.resumeMove();
+                    }, false);
+                    AMap.event.addDomListener(document.getElementById('stop'), 'click', function() {
+                        marker.stopMove();
+                    }, false);
+                });
+            }else{
+                $("#container").hide();
+                $("#move").hide();
+                $("#pause").hide();
+                $("#resume").hide();
+                $("#stop").hide();
+                layui.use(['layer'], function(){
+                    var layer = layui.layer;
+                    layer.msg(res.msg, {icon: 2});});
+            }},'json')
+    }
 </script>
 </body>
 </html>

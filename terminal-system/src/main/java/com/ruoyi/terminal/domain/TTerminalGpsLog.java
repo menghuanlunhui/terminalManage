@@ -34,6 +34,10 @@ public class TTerminalGpsLog extends BaseEntity
     @Excel(name = "纬度")
     private Double latitude;
 
+    private String startTime;
+
+    private String endTime;
+
     /** 上报时的电量百分比（0到100之间） */
     @Excel(name = "上报时的电量百分比", readConverterExp = "0=到100之间")
     private Double batteryPercentage;
@@ -103,6 +107,22 @@ public class TTerminalGpsLog extends BaseEntity
 
     public void setTerminalName(String terminalName) {
         this.terminalName = terminalName;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 
     @Override

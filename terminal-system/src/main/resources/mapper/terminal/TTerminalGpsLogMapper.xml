@@ -13,6 +13,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="batteryPercentage"    column="battery_percentage"    />
         <result property="fenceFlag"    column="fence_flag"    />
         <result property="createTime"    column="create_time"    />
+        <result property="startTime"    column="startTime"    />
+        <result property="endTime"    column="endTime"    />
     </resultMap>
 
     <sql id="selectTTerminalGpsLogVo">
@@ -38,6 +40,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="batteryPercentage != null "> and tl.battery_percentage = #{batteryPercentage}</if>
             <if test="fenceFlag != null "> and tl.fence_flag = #{fenceFlag}</if>
             <if test="terminalName != null  and terminalName != ''"> and ti.terminal_name like concat('%', #{terminalName}, '%')</if>
+            <if test="startTime!=null and startTime!=''">
+                AND date_format(ti.create_time, '%Y-%m-%d %H:%i:%s')&gt;= date_format(#{startTime}, '%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                AND date_format(ti.create_time, '%Y-%m-%d %H:%i:%s')&lt;= date_format(#{endTime}, '%Y-%m-%d %H:%i:%s')
+            </if>
         </where>
         order by tl.create_time asc
     </select>

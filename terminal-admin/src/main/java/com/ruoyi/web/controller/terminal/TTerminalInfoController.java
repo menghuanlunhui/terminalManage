@@ -27,6 +27,8 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 定位卡基础信息Controller
  * 
@@ -164,11 +166,15 @@ public class TTerminalInfoController extends BaseController
     @Log(title = "地图导航信息")
     @PostMapping( "/gpsLogList")
     @ResponseBody
-    public Object gpsLogList( String terminalId)
-    {
+    public Object gpsLogList(HttpServletRequest request) {
+        String terminalId= request.getParameter("terminalId");
+        String startTime= request.getParameter("startTime");
+        String endTime= request.getParameter("endTime");
         JSONObject jsonObject = new JSONObject();
         TTerminalGpsLog tTerminalGpsLog = new TTerminalGpsLog();
         tTerminalGpsLog.setTerminalId(terminalId);
+        tTerminalGpsLog.setStartTime(startTime);
+        tTerminalGpsLog.setEndTime(endTime);
         List<TTerminalGpsLog> list = tTerminalGpsLogService.selectTTerminalGpsLogList(tTerminalGpsLog);
         jsonObject.put("data",list);
         jsonObject.put("status",1);
