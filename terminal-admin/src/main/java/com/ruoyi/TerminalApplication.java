@@ -17,7 +17,7 @@ public class TerminalApplication
         // System.setProperty("spring.devtools.restart.enabled", "false");
         SpringApplication.run(TerminalApplication.class, args);
         System.out.println("*****************************************************");
-        System.out.println("****************  定位卡管理平台启动成功  **************");
+        System.out.println("**************** 定位卡管理平台启动成功 **************");
         System.out.println("*****************************************************");
     }
 }
